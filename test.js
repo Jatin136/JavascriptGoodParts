@@ -12,7 +12,7 @@ function mul(first, second) {
   return first * second;
 }
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function identityf that takes an argument
 // and returns a function that returns that argument
@@ -25,7 +25,7 @@ function identityf(x) {
 var three = identityf(3);
 console.log(three());
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function addf that adds from two invocations
 function addf(first) {
@@ -36,7 +36,7 @@ function addf(first) {
 
 console.log(addf(3)(4));
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function liftf that takes a binary function
 // and makes it callable with two invocations
@@ -48,7 +48,7 @@ function liftf(binary) {
   };
 }
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function curry that takes a binary function and
 // an argument and returns a function that can take a second argument
@@ -69,7 +69,7 @@ function curry(binary, first) {
 //   };
 // }
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function twice that takes a binary function
 // and returns a unary function that passes
@@ -86,7 +86,7 @@ console.log(doubl(11));
 var square = twice(mul);
 console.log(square(11));
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write reverse, a function that reverses the
 // arguments of a binary function
@@ -99,7 +99,7 @@ function reverse(binary) {
 var bus = reverse(sub);
 console.log("reverse " + bus(3, 2));
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function composeu that takes two unary functions
 // and returns a unary function that calls them both.
@@ -111,7 +111,7 @@ function composeu(fun1, fun2) {
 
 console.log("composeu " + composeu(doubl, square)(5));
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a function composeb that takes two binary functions and
 // returns a funtions that calls them both
@@ -123,7 +123,7 @@ function composeb(fun1, fun2) {
 
 console.log("composeb " + composeb(add, mul)(2, 3, 7));
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // Write a limit function that allows a binary function to be
 // called a limited number of times.
@@ -143,7 +143,7 @@ console.log("limit " + add_ltd(3, 4));
 // below code will return undefined as its called second time
 console.log("limit " + add_ltd(3, 4));
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a from function that produces a generator that will
 // produce a series of values
@@ -158,7 +158,7 @@ console.log("from generator 1 " + index());
 console.log("from generator 2 " + index());
 console.log("from generator 3 " + index());
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a to function that takes a generator and an end value,
 // and returns a generator that will produce numbers up to that limit
@@ -180,7 +180,7 @@ console.log("to 2 " + index2()); // 2
 // this will return undefined as the max limit is reached
 console.log("to 3 " + index2()); // undefined
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a fromTo function that produce a generator
 // that will produce values in a range
@@ -199,7 +199,7 @@ console.log("fromTo 1 " + index3()); // 1
 console.log("fromTo 2 " + index3()); // 2
 console.log("fromTo 3 " + index3()); // 3
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write an element function that takes an array
 // and a generator and returns a generator that
@@ -222,7 +222,7 @@ console.log("ele " + ele()); // 'c'
 console.log("ele " + ele()); // undefined
 */
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // Modify the element function so that the
 // generator argument is optional.
@@ -258,7 +258,7 @@ console.log("element after modification " + elem());
 console.log("element after modification " + elem());
 console.log("element after modification " + elem());
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a collect() function that takes a generator and
 // an array  and produces a function that will collect
@@ -282,7 +282,7 @@ console.log("collect " + col()); // 2
 console.log("collect " + col()); // undefined
 console.log(array); // [1, 2]
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // Write a filter() function that takes a geenrator and a predicate
 // and produces a generator that produces only the values approved
@@ -318,7 +318,7 @@ var fil = filter(fromTo(0, 5), function third(value) {
 console.log("fil " + fil()); // 3
 console.log("fil " + fil()); // undefined
 
-/**************************************************************************************************************/
+console.log("**************************************************************************************************************");
 
 // write a concat() function that takes two generators
 // and produces a generator the combines the sequences.
@@ -342,3 +342,32 @@ console.log("concat " + con()); // 3
 console.log("concat " + con()); // 1
 console.log("concat " + con()); // 2
 console.log("concat " + con()); // undefined
+
+console.log("**************************************************************************************************************");
+
+// Make a function gensymf() that makes a function that
+// generates unique symbols.
+function gensymf(str) {
+  var count = 0;
+  return function() {
+    count += 1;
+    return str + count;
+  };
+}
+
+var geng = gensymf("G"), genh = gensymf("H");
+
+console.log("gensymf " + geng());
+console.log("gensymf " + genh());
+console.log("gensymf " + geng());
+console.log("gensymf " + genh());
+
+console.log("**************************************************************************************************************");
+
+// Write a function gensymff() that takes a 
+// unary function and a seed and returns a gensymf.
+
+function gensymff(unary, seed) {
+  return gensymf;
+}
+
