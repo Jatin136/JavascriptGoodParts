@@ -205,6 +205,30 @@ console.log("fromTo 3 " + index3()); // 3
 // and a generator and returns a generator that
 // produce elements from the array.
 
+/*
+function element(array, gen) {
+  return function(){
+    var index = gen();
+    if(index !== undefined) {
+      return array[index];
+    }
+  }
+}
+
+
+var ele = element(["a", "b", "c", "d"], fromTo(1, 3));
+console.log("ele " + ele()); // 'b'
+console.log("ele " + ele()); // 'c'
+console.log("ele " + ele()); // undefined
+*/
+
+/**************************************************************************************************************/
+
+// Modify the element function so that the
+// generator argument is optional.
+// if a generator is not provided,
+// then each of the elements of the array will be produced
+
 function element(array, generator) {
   let index;
   if (generator !== undefined) {
@@ -226,18 +250,6 @@ function element(array, generator) {
   }
 }
 
-var ele = element(["a", "b", "c", "d"], fromTo(1, 3));
-console.log("ele " + ele()); // 'b'
-console.log("ele " + ele()); // 'c'
-console.log("ele " + ele()); // undefined
-
-/**************************************************************************************************************/
-
-// Modify the element function so that the
-// generator argument is optional.
-// if a generator is not provided,
-// then each of the elements of the array will be produced
-
 var elem = element(["a", "b", "c", "d"]);
 
 console.log("element after modification " + elem());
@@ -245,3 +257,88 @@ console.log("element after modification " + elem());
 console.log("element after modification " + elem());
 console.log("element after modification " + elem());
 console.log("element after modification " + elem());
+
+/**************************************************************************************************************/
+
+// write a collect() function that takes a generator and
+// an array  and produces a function that will collect
+// the results in the array
+
+function collect(generator, array) {
+  return function() {
+    let num = generator();
+    if (num !== undefined) {
+      array.push(num);
+    }
+    return num;
+  };
+}
+
+var array = [],
+  col = collect(fromTo(0, 2), array);
+
+console.log("collect " + col()); // 1
+console.log("collect " + col()); // 2
+console.log("collect " + col()); // undefined
+console.log(array); // [1, 2]
+
+/**************************************************************************************************************/
+
+// Write a filter() function that takes a geenrator and a predicate
+// and produces a generator that produces only the values approved
+// by the predicate
+
+// Method 1:
+/*
+function filter(gen, predicate) {
+  return function() {
+    var value;
+    do {
+      value = gen();
+    } while (value !== undefined && !predicate(value));
+    return value;
+  };
+}
+*/
+
+// Method 2:
+function filter(gen, predicate) {
+  return function recur() {
+    var value = gen();
+    if (value === undefined || predicate(value)) {
+      return value;
+    }
+    return recur();
+  };
+}
+
+var fil = filter(fromTo(0, 5), function third(value) {
+  return value % 3 === 0;
+});
+console.log("fil " + fil()); // 3
+console.log("fil " + fil()); // undefined
+
+/**************************************************************************************************************/
+
+// write a concat() function that takes two generators
+// and produces a generator the combines the sequences.
+
+function concat(gen1, gen2) {
+  var gen = gen1;
+  return function() {
+    var value = gen();
+    if (value !== undefined) {
+      return value;
+    }
+    gen = gen2;
+    return gen();
+  };
+}
+
+var con = concat(fromTo(0, 3), fromTo(0, 2));
+console.log("concat " + con()); // 1
+console.log("concat " + con()); // 2
+console.log("concat " + con()); // 3
+console.log("concat " + con()); // 1
+console.log("concat " + con()); // 2
+console.log("concat " + con()); // undefined
