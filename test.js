@@ -487,3 +487,51 @@ console.log(
 // containing an invoke funtion that can 
 // invoke the binary function, and a revoke
 // function that disables the invoke function
+
+function revocable(binary) {
+  return {
+    invoke: function(first, second) {
+      if(binary !== undefined) {
+        return binary(first, second);
+      }      
+    },
+    revoke: function() {
+      binary = undefined;
+    }
+  };
+}
+
+var rev = revocable(add), add_rev = rev.invoke;
+console.log('revocable ' + add_rev(3,4)); // 7
+rev.revoke();
+console.log('revocable ' + add_rev(5, 7)); // undefined
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a function m() that takes a values and an
+// optional source string and returns them in an object
+
+function m(value, source) {
+  return {
+    value: value,
+    source: (typeof source === 'string') ? source : String(value)
+  };
+}
+
+console.log(JSON.stringify(m(1))); // {"value":1,"source":"1"}
+
+console.log(JSON.stringify(m(Math.PI, 'pi'))); // {"value":3.141592653589793,"source":"pi"}
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a function addm() that takes two m objects and returns an m object
+
+function addm(m1, m2) {
+  return m(
+    m1.value + m2.value, "(" + m1.source + "+" + m2.source + ")"
+  );
+}
