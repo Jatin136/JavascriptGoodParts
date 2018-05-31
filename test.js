@@ -481,19 +481,18 @@ console.log(
   "**************************************************************************************************************"
 );
 
-
 // Make a revocable() function that takes a
 // binary function, and returns an object
-// containing an invoke funtion that can 
+// containing an invoke funtion that can
 // invoke the binary function, and a revoke
 // function that disables the invoke function
 
 function revocable(binary) {
   return {
     invoke: function(first, second) {
-      if(binary !== undefined) {
+      if (binary !== undefined) {
         return binary(first, second);
-      }      
+      }
     },
     revoke: function() {
       binary = undefined;
@@ -501,10 +500,11 @@ function revocable(binary) {
   };
 }
 
-var rev = revocable(add), add_rev = rev.invoke;
-console.log('revocable ' + add_rev(3,4)); // 7
+var rev = revocable(add),
+  add_rev = rev.invoke;
+console.log("revocable " + add_rev(3, 4)); // 7
 rev.revoke();
-console.log('revocable ' + add_rev(5, 7)); // undefined
+console.log("revocable " + add_rev(5, 7)); // undefined
 
 console.log(
   "**************************************************************************************************************"
@@ -516,13 +516,13 @@ console.log(
 function m(value, source) {
   return {
     value: value,
-    source: (typeof source === 'string') ? source : String(value)
+    source: typeof source === "string" ? source : String(value)
   };
 }
 
 console.log(JSON.stringify(m(1))); // {"value":1,"source":"1"}
 
-console.log(JSON.stringify(m(Math.PI, 'pi'))); // {"value":3.141592653589793,"source":"pi"}
+console.log(JSON.stringify(m(Math.PI, "pi"))); // {"value":3.141592653589793,"source":"pi"}
 
 console.log(
   "**************************************************************************************************************"
@@ -531,7 +531,178 @@ console.log(
 // write a function addm() that takes two m objects and returns an m object
 
 function addm(m1, m2) {
-  return m(
-    m1.value + m2.value, "(" + m1.source + "+" + m2.source + ")"
-  );
+  return m(m1.value + m2.value, "(" + m1.source + "+" + m2.source + ")");
 }
+
+console.log(JSON.stringify(addm(m(3), m(4)))); // {"value":7,"source":"(3+4)"}
+
+console.log(JSON.stringify(addm(m(3), m(Math.PI, "pi")))); // {"value":6.141592653589793,"source":"(3+pi)"}
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a fuction liftm() that takes a binary function
+// and a string and returns a function that acts on m objects.
+function liftm(binary, op) {
+  return function(a, b) {
+    return m(binary(a.value, b.value), "(" + a.source + op + b.source + ")");
+  };
+}
+
+var addm = liftm(add, "+");
+console.log(JSON.stringify(addm(m(3), m(4)))); // {"value":7,"source":"(3+4)"}
+
+console.log(liftm(mul, "*")(m(3), m(4))); // { value: 12, source: '(3*4)' }
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// Modify function liftm() so that the functions it produces
+// can accept arguments that are either numbers or m objects
+
+function liftmUpdated(binary, op) {
+  return function(a, b) {
+    if (typeof a === "number") {
+      a = m(a);
+    }
+    if (typeof b === "number") {
+      b = m(b);
+    }
+    return m(binary(a.value, b.value), "(" + a.source + op + b.source + ")");
+  };
+}
+
+var addm = liftmUpdated(add, "+");
+console.log("liftmUpdated " + JSON.stringify(addm(3, 4))); // {"value":7,"source":"(3+4)"}
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a function exp that evaluates simple array expression
+function exp(value) {
+  return Array.isArray(value) ? value[0](value[1], value[2]) : value;
+}
+
+var sae = [mul, 5, 11];
+
+console.log(exp(sae)); // 55
+console.log(exp(42)); // 42
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// Modify exp() to evaluate nested array expression
+
+function expModifed(value) {
+  return Array.isArray(value)
+    ? value[0](expModifed(value[1]), expModifed(value[2]))
+    : value;
+}
+
+var nae = [Math.sqrt, [add, [square, 3], [square, 4]]];
+
+console.log("expModifed: " + expModifed(nae)); // 5
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a function addg() that adds from many invocations,
+// untill it sees an empty invocation.
+function addg(first) {
+  function more(next) {
+    if (next === undefined) {
+      return first;
+    }
+    first += next;
+    return more;
+  }
+  if (first !== undefined) {
+    return more;
+  }
+}
+
+console.log(addg()); // undefined
+console.log(addg(2)()); // 2
+console.log(addg(2)(3)()); // 5
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a function liftg() that will take a binary function
+function liftg(binary) {
+  return function(first) {
+    if (first === undefined) {
+      return first;
+    }
+    return function more(next) {
+      if (next === undefined) {
+        return first;
+      }
+      first = binary(first, next);
+      return more;
+    };
+  };
+}
+
+console.log(liftg(mul)()); // undefined
+console.log(liftg(mul)(3)()); // 3
+console.log(liftg(mul)(3)(4)(0)()); //  0 
+console.log(liftg(mul)(8)(4)(1)(2)()); // 64
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// write a function arrayg that will build an array from many invocations.
+
+function arrayg(first) {
+  var array = [];
+  function more(next) {
+    if(next === undefined) {
+      return array;
+    }
+    array.push(next);
+    return more;
+  }
+
+  return more(first);
+}
+
+console.log(arrayg()); // []
+console.log(arrayg(3)()); // [3]
+console.log(arrayg(3)(4)(5)()); // [3,4,5]
+
+console.log(
+  "**************************************************************************************************************"
+);
+
+// Make a function continuize() that takes a unary function,
+// that takes a unary function, and returns a function
+// that takes a callback and an argument.
+
+
+function continuize(unary) {
+  return function (callback, arg) {
+    return callback(unary(arg));
+  };
+}
+
+// function continuize(any) {
+//   return function (callback, ...x) {
+//     return callback(any(...x));
+//   };
+// }
+
+var sqrtc = continuize(Math.sqrt);
+console.log(sqrtc(alert, 81));
+
+
+console.log(
+  "**************************************************************************************************************"
+);
